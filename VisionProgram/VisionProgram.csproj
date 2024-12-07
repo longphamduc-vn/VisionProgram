@@ -39,11 +39,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="BetterFolderBrowser" Version="1.2.0" />
-    <PackageReference Include="Microsoft.Windows.Compatibility" Version="9.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="OpenCvSharp4" Version="4.10.0.20241108" />
-    <PackageReference Include="Uno.UI" Version="5.5.87" />
+    <PackageReference Include="OpenCvSharp4.runtime.win" Version="4.10.0.20241108" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="logic\" />
+    <Folder Include="test\" />
   </ItemGroup>
 
 </Project>

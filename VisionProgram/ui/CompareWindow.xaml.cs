@@ -2,11 +2,10 @@
 using System.Drawing; // Để xử lý ảnh
 using System.Windows;
 using OpenCvSharp; // Sử dụng OpenCVSharp cho xử lý ảnh
-using ActUtlTypeLib;
+using ActUtlTypeLib; // Thư viện kết nối PLC
 using System.IO;
-using System.Windows.Media.Imaging; // Thư viện kết nối PLC
-using Microsoft.Win32;
-using System.Windows.Input;
+using System.Windows.Media.Imaging;
+
 namespace VisionProgram
 {
     public partial class CompareWindow : System.Windows.Window
@@ -22,82 +21,11 @@ namespace VisionProgram
             InitializeComponent();
             LoadSampleImage(); // Tải ảnh mẫu khi mở cửa sổ
         }
-        using Microsoft.Win32;
-using System;
-using System.IO;
-using System.Windows.Media.Imaging;
-using System.Windows.Input;
 
-private void CapturedImage_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-    {
-        // Mở hộp thoại chọn file để chọn ảnh cần so sánh
-        OpenFileDialog openFileDialog = new OpenFileDialog();
-        openFileDialog.Filter = "Image Files|*.jpg;*.jpeg;*.png;*.bmp;*.gif";
-
-        // Nếu người dùng chọn file, tiến hành so sánh
-        if (openFileDialog.ShowDialog() == true)
+        // Tải ảnh mẫu
+        private void LoadSampleImage()
         {
-            string selectedImagePath = openFileDialog.FileName;
-
-            // Kiểm tra xem ảnh đã chọn có tồn tại không
-            if (File.Exists(selectedImagePath))
-            {
-                // Tải ảnh thực tế và ảnh mẫu
-                BitmapImage selectedImage = LoadImageFromFile(selectedImagePath);
-                BitmapImage sampleImage = LoadImageFromFile("C:\\path\\to\\sample_image.jpg");  // Đảm bảo đường dẫn ảnh mẫu chính xác
-
-                // Hiển thị ảnh đã chọn
-                CapturedImage.Source = selectedImage;
-
-                // Tiến hành so sánh ảnh
-                CompareImages(sampleImage, selectedImage);
-            }
-            else
-            {
-                MessageBox.Show("Ảnh không tồn tại.");
-            }
-        }
-    }
-
-    private BitmapImage LoadImageFromFile(string imagePath)
-    {
-        BitmapImage bitmapImage = new BitmapImage();
-        bitmapImage.BeginInit();
-        bitmapImage.UriSource = new Uri(imagePath);
-        bitmapImage.EndInit();
-        return bitmapImage;
-    }
-
-    private void CompareImages(BitmapImage sampleImage, BitmapImage capturedImage)
-    {
-        // Tiến hành so sánh ảnh mẫu với ảnh thực tế tại đây
-        // Bạn có thể thực hiện việc so sánh hình ảnh (ví dụ sử dụng các thuật toán như SSIM, MSE, hoặc các thư viện hỗ trợ so sánh ảnh)
-
-        // Sau khi so sánh, hiển thị kết quả và điểm so sánh
-        double similarityScore = 0.95;  // Ví dụ điểm so sánh (cần thay đổi theo thuật toán thực tế)
-
-        // Hiển thị kết quả so sánh trên ảnh thực tế
-        MessageTextBox.Text = $"Điểm so sánh: {similarityScore * 100}%";
-
-        // Kiểm tra nếu điểm giống nhau thấp hơn ngưỡng thì gửi thông tin tới PLC (giả sử ngưỡng là 85%)
-        if (similarityScore < 0.85)
-        {
-            // Gửi thông tin đến PLC (giả sử bạn có chức năng gửi tín hiệu đến PLC ở đây)
-            SendSignalToPLC();
-        }
-    }
-
-    private void SendSignalToPLC()
-    {
-        // Mã gửi tín hiệu tới PLC (bạn cần thực hiện theo cách của bạn)
-        MessageTextBox.Text += "\nĐang gửi tín hiệu đến PLC...";
-    }
-
-    // Tải ảnh mẫu
-    private void LoadSampleImage()
-        {
-
-            sampleImagePath = "C:\\Users\\hoan\\Downloads\\hinh-nen-vu-tru-la-gi.jpg";  // Đặt đường dẫn ảnh mẫu
+            sampleImagePath = "D:\\Analysis\\defective-product\\clean_screen.png";  // Đặt đường dẫn ảnh mẫu
             SampleImage.Source = new System.Windows.Media.Imaging.BitmapImage(new Uri(sampleImagePath));
         }
 
@@ -106,10 +34,9 @@ private void CapturedImage_MouseLeftButtonDown(object sender, MouseButtonEventAr
         {
             try
             {
-                plcConnection = new ActUtlType();
-                plcConnection.Open(); // Mở kết nối PLC
+                //plcConnection.Open(); // Mở kết nối PLC
                 MessageTextBox.Text = "Đã kết nối với PLC!";
-                plcConnection.Close();
+                //plcConnection.Close();
             }
             catch (Exception)
             {
@@ -122,8 +49,7 @@ private void CapturedImage_MouseLeftButtonDown(object sender, MouseButtonEventAr
         {
             // Kiểm tra kết nối PLC và thực hiện hành động
             CheckPLCConnectionButton_Click(sender, e);  // Kiểm tra kết nối trước khi so sánh
-            //if (plcConnection.Status == 1) // Nếu kết nối thành công
-                if (1 == 1) // Nếu kết nối thành công
+            if (1 == 1) // Nếu kết nối thành công
             {
                 CaptureImage();
                 CompareImages();
@@ -138,7 +64,7 @@ private void CapturedImage_MouseLeftButtonDown(object sender, MouseButtonEventAr
         private void CaptureImage()
         {
             // Chụp ảnh (giả sử ảnh được lưu trữ ở đường dẫn sau)
-            capturedImagePath = "captured_image_path.jpg";
+            capturedImagePath = "D:\\Analysis\\defective-product\\screen_with_smudge.png";
             CapturedImage.Source = new System.Windows.Media.Imaging.BitmapImage(new Uri(capturedImagePath));
             MessageTextBox.Text = "Ảnh đã được chụp.";
         }
@@ -196,36 +122,5 @@ private void CapturedImage_MouseLeftButtonDown(object sender, MouseButtonEventAr
             // Gửi tín hiệu PLC nếu điểm giống nhau dưới ngưỡng
             plcConnection.SetDevice("D000", matchPercentage < threshold ? 1 : 0);  // Ví dụ gửi giá trị 1 nếu dưới ngưỡng
         }
-        private void CapturedImage_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            // Mở hộp thoại chọn file để chọn ảnh cần so sánh
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "Image Files|*.jpg;*.jpeg;*.png;*.bmp;*.gif";
-
-            // Nếu người dùng chọn file, tiến hành so sánh
-            if (openFileDialog.ShowDialog() == true)
-            {
-                string selectedImagePath = openFileDialog.FileName;
-
-                // Kiểm tra xem ảnh đã chọn có tồn tại không
-                if (File.Exists(selectedImagePath))
-                {
-                    // Tải ảnh thực tế và ảnh mẫu
-                    BitmapImage selectedImage = LoadImageFromFile(selectedImagePath);
-                    BitmapImage sampleImage = LoadImageFromFile("C:\\path\\to\\sample_image.jpg");  // Đảm bảo đường dẫn ảnh mẫu chính xác
-
-                    // Hiển thị ảnh đã chọn
-                    CapturedImage.Source = selectedImage;
-
-                    // Tiến hành so sánh ảnh
-                    CompareImages(sampleImage, selectedImage);
-                }
-                else
-                {
-                    MessageBox.Show("Ảnh không tồn tại.");
-                }
-            }
-        }
-
     }
 }
